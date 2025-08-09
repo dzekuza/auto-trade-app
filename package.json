@@ -9,6 +9,8 @@
     "server": "ts-node --transpile-only --compiler-options '{\"module\":\"commonjs\"}' server/src/index.ts"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.16.0",
+    "@ankr.com/ankr.js": "^2.0.9",
     "@tanstack/react-query": "^5.50.0",
     "autoprefixer": "^10.4.19",
     "axios": "^1.7.5",

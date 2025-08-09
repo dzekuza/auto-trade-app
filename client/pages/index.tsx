@@ -9,6 +9,10 @@ const BalanceCard = dynamic(() => import('../components/BalanceCard'), { ssr: fa
 const TokensPanel = dynamic(() => import('../components/TokensPanel'), { ssr: false })
 const ChartCard = dynamic(() => import('../components/ChartCard'), { ssr: false })
 const ChainSelector = dynamic(() => import('../components/ChainSelector'), { ssr: false })
+const PortfolioPanel = dynamic(() => import('../components/PortfolioPanel'), { ssr: false })
+const ActivityPanel = dynamic(() => import('../components/ActivityPanel'), { ssr: false })
+const BotWalletCard = dynamic(() => import('../components/BotWalletCard'), { ssr: false })
+const RouterSelector = dynamic(() => import('../components/RouterSelector'), { ssr: false })
 
 /**
  * Home page for the auto-trade app.
@@ -25,11 +29,15 @@ export default function Home() {
         <div className="md:col-span-2 space-y-4">
           <ChartCard />
           <TokensPanel />
+          <ActivityPanel />
+          <PortfolioPanel />
         </div>
         <div className="space-y-4">
           <WalletOptions />
           <AccountInfo />
           <BalanceCard />
+          <BotWalletCard />
+          <RouterSelector />
           <ChainSelector />
           <div className="card">
             <div className="card-header">

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type SupportedChain = 'mainnet' | 'base'
+export type SupportedChain = 'mainnet' | 'base' | 'arbitrum' | 'bsc' | 'polygon'
 
 type TradeState = {
   selectedChain: SupportedChain

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
+import { Button } from './ui/button'
 
 /**
  * AccountInfo displays the connected account's address and allows disconnection.
@@ -18,7 +19,7 @@ const AccountInfo: React.FC = () => {
       <div className="card-body">
         <div className="flex items-center justify-between">
           <p className="font-mono text-sm truncate">{address}</p>
-          <button className="bg-gray-900 hover:bg-black text-white rounded-md px-3 py-1 text-sm" onClick={() => disconnect()}>Disconnect</button>
+          <Button variant="secondary" size="sm" onClick={() => disconnect()}>Disconnect</Button>
         </div>
       </div>
     </div>

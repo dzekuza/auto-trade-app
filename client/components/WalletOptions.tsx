@@ -1,12 +1,13 @@
 import React from 'react'
 import { useConnect } from 'wagmi'
+import { Button } from './ui/button'
 
 /**
  * WalletOptions renders a list of available wallet connectors.
  * Users can click a button to connect their preferred wallet.
  */
 const WalletOptions: React.FC = () => {
-  const { connectors, connect, isPending, pendingConnector } = useConnect()
+  const { connectors, connect, isLoading, pendingConnector } = useConnect()
 
   return (
     <div className="card">
@@ -16,16 +17,16 @@ const WalletOptions: React.FC = () => {
       <div className="card-body">
         <div className="flex flex-wrap gap-2">
           {connectors.map((connector) => (
-            <button
-              className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-3 py-1 text-sm"
-              key={connector.id ?? connector.uid}
+            <Button
+              key={connector.id}
               onClick={() => connect({ connector })}
-              disabled={isPending && pendingConnector?.uid === connector.uid}
+              disabled={isLoading && pendingConnector?.id === connector.id}
+              size="sm"
             >
-              {isPending && pendingConnector?.uid === connector.uid
+              {isLoading && pendingConnector?.id === connector.id
                 ? 'Connecting...'
                 : connector.name}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

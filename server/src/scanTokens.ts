@@ -24,7 +24,7 @@ export interface TokenOpportunity {
  * perform your DecodeFi prompt analysis, and compute scores based on
  * momentum, liquidity, and risk factors.
  */
-export async function scanTokens(): Promise<TokenOpportunity[]> {
+export async function scanTokens(chain?: string): Promise<TokenOpportunity[]> {
   // Pull trending meme-like pairs from DexScreener search as a pragmatic starting point
   // Docs: https://docs.dexscreener.com/
   const axios = await import('axios').then(m => m.default)
@@ -59,7 +59,7 @@ export async function scanTokens(): Promise<TokenOpportunity[]> {
       }
     }
 
-    const opportunities: TokenOpportunity[] = Array.from(byBaseAddress.values()).map((p) => {
+    const opportunitiesAll: TokenOpportunity[] = Array.from(byBaseAddress.values()).map((p) => {
       const vol24 = Number(p?.volume?.h24 ?? 0)
       const liqUsd = Number(p?.liquidity?.usd ?? 0)
       const ch1 = Number(p?.priceChange?.h1 ?? 0)
@@ -94,6 +94,17 @@ export async function scanTokens(): Promise<TokenOpportunity[]> {
       }
     })
       .filter(t => t.address)
+
+    const chainKey = String(chain || '').toLowerCase()
+    const filtered =
+      chainKey === 'base' ? opportunitiesAll.filter(t => t.chainId === 'base') :
+      chainKey === 'mainnet' ? opportunitiesAll.filter(t => t.chainId === 'ethereum') :
+      chainKey === 'arbitrum' ? opportunitiesAll.filter(t => t.chainId === 'arbitrum') :
+      chainKey === 'bsc' ? opportunitiesAll.filter(t => t.chainId === 'bsc') :
+      chainKey === 'polygon' ? opportunitiesAll.filter(t => t.chainId === 'polygon') :
+      opportunitiesAll
+
+    const opportunities = filtered
       .sort((a, b) => (b.score - a.score))
       .slice(0, 100)
 

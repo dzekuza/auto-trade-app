@@ -1,4 +1,11 @@
 import React, { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { Button } from './ui/button'
+import { toast } from 'sonner'
+import dynamic from 'next/dynamic'
+import { useTradeStore } from '../store/use-trade-store'
+
+const AutoTradeModal = dynamic(() => import('./AutoTradeModal'), { ssr: false })
 
 interface TokenOpportunity {
   address: string
@@ -14,17 +21,18 @@ interface TokenOpportunity {
 const TradeControls: React.FC = () => {
   const [autoTrading, setAutoTrading] = useState(false)
   const [scanning, setScanning] = useState(false)
+  const queryClient = useQueryClient()
   const [tokens, setTokens] = useState<TokenOpportunity[]>([])
   const [autoError, setAutoError] = useState<string | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
+  const chain = useTradeStore(s => s.selectedChain)
 
   // Fetch token opportunities from the API route
   async function handleScan() {
     setScanning(true)
     try {
-      const res = await fetch('/api/scan')
-      if (!res.ok) throw new Error(`Error fetching opportunities: ${res.statusText}`)
-      const data = await res.json()
-      setTokens(data?.tokens ?? [])
+      await queryClient.invalidateQueries({ queryKey: ['scan'] })
+      toast.info('Scan requested')
     } catch (err) {
       console.error(err)
     } finally {
@@ -32,7 +40,7 @@ const TradeControls: React.FC = () => {
     }
   }
 
-  async function toggleAutoTrading() {
+  async function toggleAutoTrading(opts?: { maxSpendEth?: string; maxSpendStable?: string; stableToken?: 'USDC' | null }) {
     const newStatus = !autoTrading
     setAutoTrading(newStatus)
     setAutoError(null)
@@ -40,7 +48,7 @@ const TradeControls: React.FC = () => {
       const res = await fetch('/api/auto', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enable: newStatus })
+        body: JSON.stringify({ enable: newStatus, chain, ...opts })
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
@@ -55,15 +63,25 @@ const TradeControls: React.FC = () => {
   }
 
   return (
+    <>
     <div className="space-y-3">
       <div className="flex gap-2">
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md px-3 py-1 text-sm" onClick={handleScan} disabled={scanning}>
+        <Button onClick={handleScan} disabled={scanning} size="sm">
           {scanning ? 'Scanning…' : 'Scan Tokens'}
-        </button>
-        <button className="bg-gray-900 hover:bg-black text-white rounded-md px-3 py-1 text-sm" onClick={toggleAutoTrading}>
-          {autoTrading ? 'Stop Auto Trading' : 'Start Auto Trading'}
-        </button>
+        </Button>
+        {autoTrading ? (
+          <Button variant="secondary" size="sm" onClick={() => toggleAutoTrading()}>
+            Stop Auto Trading
+          </Button>
+        ) : (
+          <Button variant="secondary" size="sm" onClick={() => setModalOpen(true)}>
+            Start Auto Trading
+          </Button>
+        )}
       </div>
+      {autoError && (
+        <p className="text-sm text-red-600">{autoError}</p>
+      )}
       {autoError && (
         <p className="text-sm text-red-600">{autoError}</p>
       )}
@@ -81,6 +99,12 @@ const TradeControls: React.FC = () => {
         </div>
       )}
     </div>
+    <AutoTradeModal
+      open={modalOpen}
+      onClose={() => setModalOpen(false)}
+      onConfirm={(opts) => toggleAutoTrading(opts)}
+    />
+    </>
   )
 }
 

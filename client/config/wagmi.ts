@@ -1,5 +1,5 @@
 import { configureChains, createConfig } from 'wagmi'
-import { mainnet, base } from 'wagmi/chains'
+import { mainnet, base, arbitrum, bsc, polygon } from 'wagmi/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
@@ -15,7 +15,7 @@ import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || ''
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, base],
+  [mainnet, base, arbitrum, bsc, polygon],
   [publicProvider()]
 )
 

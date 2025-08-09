@@ -8,6 +8,9 @@ const ChainSelector: React.FC = () => {
   const options: { label: string, value: SupportedChain }[] = [
     { label: 'Ethereum Mainnet', value: 'mainnet' },
     { label: 'Base', value: 'base' },
+    { label: 'Arbitrum One', value: 'arbitrum' },
+    { label: 'BNB Smart Chain', value: 'bsc' },
+    { label: 'Polygon', value: 'polygon' },
   ]
 
   return (
